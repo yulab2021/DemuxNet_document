@@ -1,0 +1,208 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attribution &amp; Driver Identification &mdash; DemuxNet 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=fc837d61"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Methodology &amp; Metrics" href="methodology_metrics.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DemuxNet
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_preprocessing.html">Data Preparation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Attribution &amp; Driver Identification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#attribution-data-preparation">Attribution Data Preparation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-attribution-analysis">Run Attribution Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#attribution-parameters">Attribution Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#attribution-output-structure">Attribution Output Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methodology_metrics.html">Methodology &amp; Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citing.html">Citing DemuxNet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DemuxNet</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Attribution &amp; Driver Identification</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/attribution.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="attribution-driver-identification">
+<h1>Attribution &amp; Driver Identification<a class="headerlink" href="#attribution-driver-identification" title="Link to this heading"></a></h1>
+<a class="reference internal image-reference" href="_static/DemuxNet_Gene_Countribution_wf.png"><img alt="Attribution workflow" class="align-center" src="_static/DemuxNet_Gene_Countribution_wf.png" style="width: 700px;" />
+</a>
+<p>This framework uses DemuxNet and Integrated Gradients (IG) to quantify gene contributions.
+It introduces two metrics:</p>
+<ul class="simple">
+<li><p><strong>WIS</strong> (Weighted Importance Score)</p></li>
+<li><p><strong>DCS</strong> (Directional Consistency Score)</p></li>
+</ul>
+<section id="attribution-data-preparation">
+<h2>Attribution Data Preparation<a class="headerlink" href="#attribution-data-preparation" title="Link to this heading"></a></h2>
+<p>Prepare a raw count matrix with labels. Replace sample info with generic CMO labels
+and prefix the barcodes.</p>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">Seurat</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">stringr</span><span class="p">)</span>
+
+<span class="n">sc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">readRDS</span><span class="p">(</span><span class="s">&#39;path/to/your/sc.rds&#39;</span><span class="p">)</span>
+
+<span class="n">count_matrix</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">GetAssayData</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span><span class="w"> </span><span class="n">assay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;RNA&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;counts&quot;</span><span class="p">)</span>
+<span class="n">meta_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sc</span><span class="o">@</span><span class="n">meta.data</span>
+<span class="n">sc1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">CreateSeuratObject</span><span class="p">(</span><span class="n">counts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count_matrix</span><span class="p">,</span><span class="w"> </span><span class="n">meta.data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meta_data</span><span class="p">)</span>
+
+<span class="n">sc1</span><span class="o">@</span><span class="n">meta.data</span><span class="o">$</span><span class="n">Barcode</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rownames</span><span class="p">(</span><span class="n">sc1</span><span class="o">@</span><span class="n">meta.data</span><span class="p">)</span>
+<span class="n">sc1</span><span class="o">@</span><span class="n">meta.data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sc1</span><span class="o">@</span><span class="n">meta.data</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">mutate</span><span class="p">(</span>
+<span class="w">    </span><span class="n">new_Barcode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">case_when</span><span class="p">(</span>
+<span class="w">      </span><span class="nf">str_detect</span><span class="p">(</span><span class="n">Tissue</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;HT&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="nf">paste0</span><span class="p">(</span><span class="s">&quot;CMO301_&quot;</span><span class="p">,</span><span class="w"> </span><span class="nf">str_replace</span><span class="p">(</span><span class="n">Barcode</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;.*_&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)),</span>
+<span class="w">      </span><span class="nf">str_detect</span><span class="p">(</span><span class="n">Tissue</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;NT&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="nf">paste0</span><span class="p">(</span><span class="s">&quot;CMO302_&quot;</span><span class="p">,</span><span class="w"> </span><span class="nf">str_replace</span><span class="p">(</span><span class="n">Barcode</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;.*_&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)),</span>
+<span class="w">      </span><span class="kc">TRUE</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="nf">str_replace</span><span class="p">(</span><span class="n">Barcode</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;.*_&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="n">sc1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">RenameCells</span><span class="p">(</span><span class="n">sc1</span><span class="p">,</span><span class="w"> </span><span class="n">new.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sc1</span><span class="o">@</span><span class="n">meta.data</span><span class="o">$</span><span class="n">new_Barcode</span><span class="p">)</span>
+
+<span class="n">counts_matrix</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">LayerData</span><span class="p">(</span><span class="n">object</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sc1</span><span class="p">,</span><span class="w"> </span><span class="n">assay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;RNA&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;counts&#39;</span><span class="p">)</span>
+<span class="nf">saveRDS</span><span class="p">(</span><span class="n">counts_matrix</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;sc_counts.rds&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="run-attribution-analysis">
+<h2>Run Attribution Analysis<a class="headerlink" href="#run-attribution-analysis" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>demuxnet/ig.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-i<span class="w"> </span>test.rds<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--features<span class="w"> </span><span class="m">2000</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--feature-mode<span class="w"> </span>hvg<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--gene-list<span class="w"> </span>Custom.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--gene-mode<span class="w"> </span>all<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--ig-output<span class="w"> </span>ig/ig_summary.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--randomize-runs<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--label-map-file<span class="w"> </span>label_map.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--prediction-output-prefix<span class="w"> </span>preds/run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--accuracy-output<span class="w"> </span>ig/accuracy.csv
+</pre></div>
+</div>
+</section>
+<section id="attribution-parameters">
+<h2>Attribution Parameters<a class="headerlink" href="#attribution-parameters" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-i</span></code>: Input gene expression matrix (RDS).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--features</span></code>: Number of top features (default: 6000).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--feature-mode</span></code>: <code class="docutils literal notranslate"><span class="pre">nonzero</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">hvg</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--gene-list</span></code>: Optional CSV/TXT file with additional genes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--gene-mode</span></code>: <code class="docutils literal notranslate"><span class="pre">only</span></code> or <code class="docutils literal notranslate"><span class="pre">all</span></code> (union).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--ig-output</span></code>: Integrated Gradients summary output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--randomize-runs</span></code>: Number of independent runs (0 means single run).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--label-map-file</span></code>: CSV mapping original labels to replacement labels.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--prediction-output-prefix</span></code>: Prefix for prediction CSVs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--accuracy-output</span></code>: Accuracy summary output.</p></li>
+</ul>
+</section>
+<section id="attribution-output-structure">
+<h2>Attribution Output Structure<a class="headerlink" href="#attribution-output-structure" title="Link to this heading"></a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>.
+├── accuracy.csv
+├── ig_summary_run1_pred.csv
+├── ig_summary_run1_true.csv
+├── ig_summary_run2_pred.csv
+├── ig_summary_run2_true.csv
+...
+└── preds
+    ├── run_run1_prediction.csv
+    ├── run_run2_prediction.csv
+    └── run_run3_prediction.csv
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="methodology_metrics.html" class="btn btn-neutral float-right" title="Methodology &amp; Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Hu lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

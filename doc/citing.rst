@@ -1,6 +1,6 @@
-.. _citing:
+Citing DemuxNet
+===============
 
+If you use DemuxNet in your research, please cite:
 
-Citing TandemMod
---------------------------
-If you use TandemMod in your research, please cite ******************************.
+[******]

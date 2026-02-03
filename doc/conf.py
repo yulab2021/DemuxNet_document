@@ -46,9 +46,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'TandemMod'
-copyright = '2023, Yulab'
-author = 'Yulab'
+project = 'DemuxNet'
+copyright = '2026, Hu lab'
+author = 'Hu lab'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

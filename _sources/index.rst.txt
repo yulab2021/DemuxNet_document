@@ -3,15 +3,23 @@
    in this index.rst for them to be rendered and added to the
    table of contents
 
-Welcome to TandemMod's documentation!
-==================================
+Welcome to DemuxNet's documentation!
+====================================
 
-TandemMod is a deep learning framework for detecting RNA modifications in nanopore direct RNA sequencing (DRS) data. It offers three modes: de novo training, transfer learning, and prediction. Researchers can train from scratch, fine-tune pre-trained models, or apply existing models for predictions. TandemMod achieves high accuracy and can be used to identify multi tpyes of RNA modifications in various species and conditions. It provides a user-friendly solution for studying RNA modifications.
+.. image:: _static/DemuxNet_Logo.png
+   :alt: DemuxNet logo
+   :align: center
+   :width: 320px
 
-To use TandemMod, you can follow the instructions below:
+DemuxNet is a machine learning-augmented tool for single-cell RNA-seq (scRNA-seq)
+sample demultiplexing. It automates assignment of cells to samples in pooled runs
+and predicts missing Cell Multiplexing Oligo (CMO) labels for barcodes with
+incomplete or ambiguous CMO information.
+
+For more information, please refer to our manuscript: [******].
 
 Contents
-==========
+========
 
 .. toctree::
    :maxdepth: 2
@@ -19,21 +27,9 @@ Contents
    installation.rst
    data_preprocessing.rst
    usage.rst
-   run_examples.rst
-   data_postprocessing.rst
-   help.rst
+   attribution.rst
+   methodology_metrics.rst
+   contributing.rst
+   license.rst
+   contact.rst
    citing.rst
-
-
-
-
-
-Citing TandemMod
---------------------------
-If you use TandemMod in your research, please cite **************************************
-
-Contacts
---------------------------
-TandemMod is developed and maintained by `You Wu <https://github.com/paddi1990>`_ and `Xiang Yu <https://github.com/yulab2021>`_ from Shanghai Jiao Tong University. If you want to contribute or have any questions, please leave an issue in `our repository <https://github.com/yulab2021/TandemMod/issues>`_.
-
-Thank you!
