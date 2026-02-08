@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Methodology &amp; Metrics &#8212; DemuxNet 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="_static/documentation_options.js?v=fc837d61"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
+    <link rel="prev" title="Attribution &amp; Driver Identification" href="attribution.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="attribution.html" title="Attribution &amp; Driver Identification"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DemuxNet 1.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Methodology &amp; Metrics</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="methodology-metrics">
+<h1>Methodology &amp; Metrics<a class="headerlink" href="#methodology-metrics" title="Link to this heading">¶</a></h1>
+<p>To mitigate stochasticity across deep learning runs and scale variance across converged models,
+DemuxNet introduces two core metrics: <strong>WIS</strong> and <strong>DCS</strong>.</p>
+<section id="weighted-importance-score-wis">
+<h2>1. Weighted Importance Score (WIS)<a class="headerlink" href="#weighted-importance-score-wis" title="Link to this heading">¶</a></h2>
+<section id="definition">
+<h3>Definition<a class="headerlink" href="#definition" title="Link to this heading">¶</a></h3>
+<p>WIS measures the comprehensive ranking score of a gene’s contribution across multiple runs,
+and assigns higher weights to high-accuracy models.</p>
+</section>
+<section id="formulas">
+<h3>Formulas<a class="headerlink" href="#formulas" title="Link to this heading">¶</a></h3>
+<p>Model weight:</p>
+<div class="math notranslate nohighlight">
+\[W_k = \left( \max\left(0, 2 \times (Acc_k - 0.5)\right) \right)^2\]</div>
+<p>Single-run rank score:</p>
+<div class="math notranslate nohighlight">
+\[S_{i,k} = 1 - \frac{Rank_{i,k}}{M}\]</div>
+<p>Final WIS:</p>
+<div class="math notranslate nohighlight">
+\[WIS_i = \frac{\sum_{k=1}^{N} (S_{i,k} \times W_k)}{\sum_{k=1}^{N} W_k}\]</div>
+</section>
+</section>
+<section id="directional-consistency-score-dcs">
+<h2>2. Directional Consistency Score (DCS)<a class="headerlink" href="#directional-consistency-score-dcs" title="Link to this heading">¶</a></h2>
+<section id="id1">
+<h3>Definition<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>DCS measures the stability of a gene’s regulation direction across runs.</p>
+</section>
+<section id="formula">
+<h3>Formula<a class="headerlink" href="#formula" title="Link to this heading">¶</a></h3>
+<div class="math notranslate nohighlight">
+\[DCS_i = \frac{\sum_{k=1}^{N} (\mathrm{sign}(IG_{i,k}) \times W_k)}{\sum_{k=1}^{N} W_k}\]</div>
+</section>
+<section id="interpretation">
+<h3>Interpretation<a class="headerlink" href="#interpretation" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(DCS \approx 1\)</span>: Stable positive driver</p></li>
+<li><p><span class="math notranslate nohighlight">\(DCS \approx -1\)</span>: Stable negative driver</p></li>
+<li><p><span class="math notranslate nohighlight">\(|DCS| \le 0.5\)</span>: Ambiguous / noise</p></li>
+</ul>
+</section>
+</section>
+<section id="screening-strategy">
+<h2>Screening Strategy<a class="headerlink" href="#screening-strategy" title="Link to this heading">¶</a></h2>
+<p>We recommend using a quadrant plot:</p>
+<ul class="simple">
+<li><p>X axis: DCS</p></li>
+<li><p>Y axis: WIS</p></li>
+</ul>
+<p>Filter: keep genes with <span class="math notranslate nohighlight">\(|DCS| &gt; 0.5\)</span> and high WIS rank as robust drivers.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="attribution.html"
+                          title="previous chapter">Attribution &amp; Driver Identification</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="contributing.html"
+                          title="next chapter">Contributing</a></p>
+  </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="attribution.html" title="Attribution &amp; Driver Identification"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DemuxNet 1.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Methodology &amp; Metrics</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2026, Hu lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>
